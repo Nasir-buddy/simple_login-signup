@@ -1,9 +1,9 @@
 import React from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Landing from './Component/Landing'
-import Dashboard from './Component/Dashboard'
 import { AuthProvider } from './context/AuthContext'
 import ProtectedRoute from './Component/ProtectedRoute'
+import Todo from './Component/todo'
 
 const App = () => {
   return (
@@ -11,11 +11,12 @@ const App = () => {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Landing />} />
+          <Route path="/login" element={<Landing />} />
           <Route
-            path="/dashboard"
+            path="/todo"
             element={
               <ProtectedRoute>
-                <Dashboard />
+                <Todo />
               </ProtectedRoute>
             }
           />

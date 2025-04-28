@@ -27,7 +27,7 @@ const Landing = () => {
       } else {
         await signUp(email, password)
       }
-      navigate("/dashboard")
+      navigate("/todo")
     } catch (error) {
       setError(error instanceof Error ? error.message : "An unexpected error occurred")
     } finally {
