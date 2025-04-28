@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
-import { FaTrash, FaEdit, FaCheck, FaTimes } from 'react-icons/fa'
+import { FaTrash, FaEdit, FaCheck, FaTimes, FaSignOutAlt } from 'react-icons/fa'
 import { RiArrowUpSLine, RiArrowDownSLine, RiArrowRightSLine } from 'react-icons/ri'
 import { Input } from "../components/ui/input"
 import { Button } from "../components/ui/button"
@@ -21,6 +21,7 @@ import {
 import { Badge } from "../components/ui/badge"
 import { Checkbox } from "../components/ui/checkbox"
 import { cn } from '../lib/utils'
+import { useAuth } from '../context/AuthContext'
 
 interface Todo {
   id: string
@@ -43,6 +44,7 @@ const Todo = () => {
   const [editText, setEditText] = useState('')
   const [userId, setUserId] = useState<string | null>(null)
   const [filterText, setFilterText] = useState('')
+  const { signOut } = useAuth()
 
   // Get current user and fetch todos on component mount
   useEffect(() => {
@@ -205,6 +207,16 @@ const Todo = () => {
     return `TASK-${todo.id.substring(0, 4)}`
   }
 
+  // Handle logout
+  const handleLogout = async () => {
+    try {
+      await signOut()
+    } catch (error) {
+      setError("Failed to logout. Please try again.")
+      console.error("Logout error:", error)
+    }
+  }
+
   // Show message if user is not authenticated
   if (!userId && !loading) {
     return (
@@ -219,7 +231,19 @@ const Todo = () => {
   return (
     <div className="min-h-screen bg-black text-white">
       <div className="container mx-auto p-6 max-w-5xl">
-        <h1 className="text-3xl font-bold">Welcome back!</h1>
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-3xl font-bold">Welcome back!</h1>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-md transition-colors"
+              aria-label="Logout"
+            >
+              <FaSignOutAlt className="h-4 w-4" />
+              <span>Logout</span>
+            </button>
+          </div>
+        </div>
         <p className="text-gray-400 mb-6">Here's a list of your tasks for this month!</p>
         
         {error && (
