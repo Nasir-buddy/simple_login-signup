@@ -23,7 +23,7 @@ const Landing = () => {
         </div>
       </div>
       {/* Right Side */}
-      <div className="md:w-1/2 flex items-center justify-center p-8 bg-background relative">
+      <div className="md:w-1/2 flex items-center justify-center p-8 bg-black relative">
         <div className="absolute top-8 right-8 text-sm font-medium">
           <a href="#" className="hover:bg-gray-400 px-3 py-2 duration-300 hover:text-black rounded-md">Login</a>
         </div>
@@ -42,7 +42,7 @@ const Landing = () => {
               <span className="mx-2 text-xs text-muted-foreground tracking-widest">OR CONTINUE WITH</span>
               <div className="flex-grow border-t border-border" />
             </div>
-            <Button className="w-full border border-border text-white flex items-center justify-center hover:bg-[#232326]" variant="outline" type="button">
+            <Button className="w-full border border-border bg-black text-white flex items-center justify-center hover:bg-gray-900 hover:text-white" variant="outline" type="button">
               <FaGithub className="mr-2" />
               GitHub
             </Button>
