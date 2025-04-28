@@ -1,54 +1,101 @@
-# React + TypeScript + Vite
+# Todo Application with Supabase
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A simple Todo application built with React, TypeScript and Supabase for backend storage and authentication.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Create, read, update, and delete todo items
+- Mark todos as complete/incomplete
+- User authentication (sign up, sign in, sign out)
+- Data stored in Supabase database
+- Simple, clean UI
 
-## Expanding the ESLint configuration
+## Prerequisites
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- Node.js (v16+)
+- npm or yarn
+- Supabase account
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## Supabase Setup
+
+1. Create a new Supabase project at [https://supabase.com](https://supabase.com)
+2. After creating the project, go to the SQL Editor in your Supabase dashboard
+3. Run the following SQL to create the todos table:
+
+```sql
+-- Create a todos table in Supabase
+CREATE TABLE IF NOT EXISTS todos (
+  id UUID DEFAULT extensions.uuid_generate_v4() PRIMARY KEY,
+  title TEXT NOT NULL,
+  is_complete BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Set up Row Level Security (RLS)
+ALTER TABLE todos ENABLE ROW LEVEL SECURITY;
+
+-- Create policy to allow authenticated users to create todos
+CREATE POLICY "Users can create their own todos" ON todos FOR INSERT
+  WITH CHECK (auth.uid() IS NOT NULL);
+
+-- Create policy to allow users to read their own todos
+CREATE POLICY "Users can read their own todos" ON todos FOR SELECT
+  USING (auth.uid() IS NOT NULL);
+
+-- Create policy to allow users to update their own todos
+CREATE POLICY "Users can update their own todos" ON todos FOR UPDATE
+  USING (auth.uid() IS NOT NULL);
+
+-- Create policy to allow users to delete their own todos
+CREATE POLICY "Users can delete their own todos" ON todos FOR DELETE
+  USING (auth.uid() IS NOT NULL);
+
+-- Add a user_id column to associate todos with users
+ALTER TABLE todos ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES auth.users(id) DEFAULT auth.uid();
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+4. Go to Project Settings > API to get your Supabase URL and anon key
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Environment Setup
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+1. Create a `.env` file in the root directory with the following variables:
+
 ```
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+## Installation and Running
+
+1. Clone the repository
+2. Install dependencies:
+   ```
+   npm install
+   ```
+   or
+   ```
+   yarn
+   ```
+3. Start the development server:
+   ```
+   npm run dev
+   ```
+   or
+   ```
+   yarn dev
+   ```
+4. Access the application at [http://localhost:5173](http://localhost:5173)
+
+## Usage
+
+1. Sign up or sign in to access the Todo application
+2. Add new todos by typing in the input box and clicking "Add"
+3. Mark todos as complete by clicking on the todo text
+4. Edit todos by clicking the edit button
+5. Delete todos by clicking the delete button
+
+## Project Structure
+
+- `src/Component/todo.tsx` - Main Todo component with CRUD functionality
+- `src/lib/supabase.ts` - Supabase client configuration
+- `src/context/AuthContext.tsx` - Authentication context for user management
