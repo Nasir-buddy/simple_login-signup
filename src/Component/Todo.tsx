@@ -1,6 +1,26 @@
 import React, { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { FaTrash, FaEdit, FaCheck, FaTimes } from 'react-icons/fa'
+import { RiArrowUpSLine, RiArrowDownSLine, RiArrowRightSLine } from 'react-icons/ri'
+import { Input } from "../components/ui/input"
+import { Button } from "../components/ui/button"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "../components/ui/table"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../components/ui/dropdown-menu"
+import { Badge } from "../components/ui/badge"
+import { Checkbox } from "../components/ui/checkbox"
+import { cn } from '../lib/utils'
 
 interface Todo {
   id: string
@@ -22,6 +42,7 @@ const Todo = () => {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editText, setEditText] = useState('')
   const [userId, setUserId] = useState<string | null>(null)
+  const [filterText, setFilterText] = useState('')
 
   // Get current user and fetch todos on component mount
   useEffect(() => {
@@ -163,6 +184,27 @@ const Todo = () => {
     }
   }
 
+  // Filter todos based on search text
+  const filteredTodos = todos.filter(todo => 
+    todo.title.toLowerCase().includes(filterText.toLowerCase())
+  )
+
+  // Get task status
+  const getStatus = (todo: Todo) => {
+    return todo.is_complete ? "Done" : "Todo"
+  }
+
+  // Get priority (just random for demo)
+  const getPriority = (todo: Todo) => {
+    const id = todo.id.charCodeAt(0) % 3;
+    return id === 0 ? "High" : id === 1 ? "Medium" : "Low";
+  }
+
+  // Get task ID (simulating ID like in the image)
+  const getTaskId = (todo: Todo) => {
+    return `TASK-${todo.id.substring(0, 4)}`
+  }
+
   // Show message if user is not authenticated
   if (!userId && !loading) {
     return (
@@ -175,116 +217,263 @@ const Todo = () => {
   }
 
   return (
-    <div className="max-w-md mx-auto p-4">
-      <h1 className="text-2xl font-bold text-center mb-6">Todo App</h1>
-      
-      {error && (
-        <div className="bg-red-100 text-red-700 p-3 rounded mb-4">
-          {error}
-          <button 
-            className="ml-2 font-bold"
-            onClick={() => setError(null)}
-            aria-label="Close error message"
-          >
-            ×
-          </button>
-        </div>
-      )}
+    <div className="min-h-screen bg-black text-white">
+      <div className="container mx-auto p-6 max-w-5xl">
+        <h1 className="text-3xl font-bold">Welcome back!</h1>
+        <p className="text-gray-400 mb-6">Here's a list of your tasks for this month!</p>
+        
+        {error && (
+          <div className="bg-red-900/20 text-red-400 p-3 rounded mb-4 border border-red-800">
+            {error}
+            <button 
+              className="ml-2 font-bold"
+              onClick={() => setError(null)}
+              aria-label="Close error message"
+            >
+              ×
+            </button>
+          </div>
+        )}
 
-      <form onSubmit={addTodo} className="mb-6">
-        <div className="flex">
-          <input
-            type="text"
-            value={newTodo}
-            onChange={(e) => setNewTodo(e.target.value)}
-            placeholder="Add a new task..."
-            className="flex-grow p-2 border rounded-l focus:outline-none focus:ring-2 focus:ring-blue-300"
-            aria-label="New todo text"
-          />
-          <button
-            type="submit"
-            className="bg-blue-500 text-white p-2 rounded-r hover:bg-blue-600"
-          >
-            Add
-          </button>
+        <div className="flex space-x-2 mb-6">
+          <div className="relative flex-1">
+            <Input
+              placeholder="Filter tasks..."
+              value={filterText}
+              onChange={(e) => setFilterText(e.target.value)}
+              className="pl-3 pr-4 h-10 bg-black/20 border-gray-800 text-white"
+            />
+          </div>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="flex space-x-2 items-center bg-black border-gray-800 text-white">
+                <span>Status</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="bg-gray-900 border-gray-800 text-gray-300">
+              <DropdownMenuItem className="hover:bg-gray-800">All</DropdownMenuItem>
+              <DropdownMenuItem className="hover:bg-gray-800">Todo</DropdownMenuItem>
+              <DropdownMenuItem className="hover:bg-gray-800">In Progress</DropdownMenuItem>
+              <DropdownMenuItem className="hover:bg-gray-800">Done</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="flex space-x-2 items-center bg-black border-gray-800 text-white">
+                <span>Priority</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="bg-gray-900 border-gray-800 text-gray-300">
+              <DropdownMenuItem className="hover:bg-gray-800">All</DropdownMenuItem>
+              <DropdownMenuItem className="hover:bg-gray-800">High</DropdownMenuItem>
+              <DropdownMenuItem className="hover:bg-gray-800">Medium</DropdownMenuItem>
+              <DropdownMenuItem className="hover:bg-gray-800">Low</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="flex space-x-2 items-center bg-black border-gray-800 text-white">
+                <span>View</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="bg-gray-900 border-gray-800 text-gray-300">
+              <DropdownMenuItem className="hover:bg-gray-800">Table</DropdownMenuItem>
+              <DropdownMenuItem className="hover:bg-gray-800">Board</DropdownMenuItem>
+              <DropdownMenuItem className="hover:bg-gray-800">Calendar</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
-      </form>
 
-      {loading ? (
-        <div className="text-center">Loading todos...</div>
-      ) : (
-        <ul className="space-y-2">
-          {todos.length === 0 ? (
-            <li className="text-center text-gray-500">No todos yet. Add one above!</li>
-          ) : (
-            todos.map(todo => (
-              <li 
-                key={todo.id} 
-                className={`border rounded p-3 flex justify-between items-center ${
-                  todo.is_complete ? 'bg-gray-50' : ''
-                }`}
-              >
-                {editingId === todo.id ? (
-                  <div className="flex items-center flex-grow">
-                    <input
-                      type="text"
-                      value={editText}
-                      onChange={(e) => setEditText(e.target.value)}
-                      className="p-1 border rounded flex-grow mr-2"
-                      aria-label="Edit todo text"
-                      placeholder="Edit todo"
-                      autoFocus
-                    />
-                    <button 
-                      onClick={saveEdit} 
-                      className="text-green-500 mr-2"
-                      aria-label="Save changes"
-                      title="Save changes"
-                    >
-                      <FaCheck />
-                    </button>
-                    <button 
-                      onClick={cancelEditing} 
-                      className="text-red-500"
-                      aria-label="Cancel editing"
-                      title="Cancel editing"
-                    >
-                      <FaTimes />
-                    </button>
-                  </div>
+        <form onSubmit={addTodo} className="mb-6">
+          <div className="flex">
+            <Input
+              type="text"
+              value={newTodo}
+              onChange={(e) => setNewTodo(e.target.value)}
+              placeholder="Add a new task..."
+              className="flex-grow rounded-r-none bg-black/20 border-gray-800 text-white"
+            />
+            <Button
+              type="submit"
+              className="rounded-l-none bg-blue-600 hover:bg-blue-700"
+            >
+              Add
+            </Button>
+          </div>
+        </form>
+
+        {loading ? (
+          <div className="text-center p-10">
+            <div className="animate-spin h-10 w-10 border-4 border-blue-500 border-t-transparent rounded-full mx-auto"></div>
+            <p className="mt-4 text-gray-400">Loading tasks...</p>
+          </div>
+        ) : (
+          <div className="border border-gray-800 rounded-md bg-black/20">
+            <Table>
+              <TableHeader>
+                <TableRow className="border-gray-800 hover:bg-gray-900/50">
+                  <TableHead className="w-12 text-gray-400">Task</TableHead>
+                  <TableHead className="w-20 text-gray-400">ID</TableHead>
+                  <TableHead className="text-gray-400">Title</TableHead>
+                  <TableHead className="w-32 text-gray-400">Status</TableHead>
+                  <TableHead className="w-32 text-gray-400">Priority</TableHead>
+                  <TableHead className="w-10 text-gray-400"></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredTodos.length === 0 ? (
+                  <TableRow className="border-gray-800 hover:bg-gray-900/50">
+                    <TableCell colSpan={6} className="text-center py-10 text-gray-500">
+                      No tasks found. Add one above!
+                    </TableCell>
+                  </TableRow>
                 ) : (
-                  <>
-                    <span 
-                      className={`flex-grow ${todo.is_complete ? 'line-through text-gray-500' : ''} cursor-pointer`}
-                      onClick={() => toggleComplete(todo.id, todo.is_complete)}
-                    >
-                      {todo.title}
-                    </span>
-                    <div className="flex space-x-2">
-                      <button 
-                        onClick={() => startEditing(todo)} 
-                        className="text-blue-500 hover:text-blue-700"
-                        aria-label="Edit todo"
-                        title="Edit todo"
-                      >
-                        <FaEdit />
-                      </button>
-                      <button 
-                        onClick={() => deleteTodo(todo.id)} 
-                        className="text-red-500 hover:text-red-700"
-                        aria-label="Delete todo"
-                        title="Delete todo"
-                      >
-                        <FaTrash />
-                      </button>
-                    </div>
-                  </>
+                  filteredTodos.map(todo => (
+                    <TableRow key={todo.id} className="border-gray-800 hover:bg-gray-900/50">
+                      <TableCell>
+                        <Checkbox
+                          checked={todo.is_complete}
+                          onCheckedChange={() => toggleComplete(todo.id, todo.is_complete)}
+                          className="border-gray-700"
+                        />
+                      </TableCell>
+                      <TableCell className="font-mono text-xs text-gray-500">{getTaskId(todo)}</TableCell>
+                      <TableCell>
+                        {editingId === todo.id ? (
+                          <div className="flex items-center space-x-2">
+                            <Input
+                              value={editText}
+                              onChange={(e) => setEditText(e.target.value)}
+                              className="h-8 text-sm bg-gray-900 border-gray-700 text-white"
+                              autoFocus
+                            />
+                            <Button size="sm" variant="ghost" onClick={saveEdit} className="h-8 p-1 text-green-500 hover:text-green-400 hover:bg-gray-800">
+                              <FaCheck className="h-4 w-4" />
+                            </Button>
+                            <Button size="sm" variant="ghost" onClick={cancelEditing} className="h-8 p-1 text-red-500 hover:text-red-400 hover:bg-gray-800">
+                              <FaTimes className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ) : (
+                          <span className={todo.is_complete ? "line-through text-gray-500" : "text-white"}>
+                            {todo.title}
+                          </span>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <Badge 
+                          variant={todo.is_complete ? "outline" : "secondary"} 
+                          className={cn(
+                            "px-2 font-normal",
+                            getStatus(todo) === "Todo" ? "bg-gray-700 text-white border-gray-600 hover:bg-gray-600" :
+                            getStatus(todo) === "Done" ? "bg-green-700 text-white border-green-600 hover:bg-green-600" :
+                            "bg-transparent text-gray-400 border-gray-600 hover:bg-gray-800"
+                          )}
+                        >
+                          {getStatus(todo)}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center">
+                          {getPriority(todo) === "High" ? (
+                            <RiArrowUpSLine className="mr-2 text-red-500" />
+                          ) : getPriority(todo) === "Medium" ? (
+                            <RiArrowRightSLine className="mr-2 text-amber-500" />
+                          ) : (
+                            <RiArrowDownSLine className="mr-2 text-green-500" />
+                          )}
+                          <span className="text-gray-300">{getPriority(todo)}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0 text-gray-400 hover:text-white hover:bg-gray-800">
+                              <span className="sr-only">Open menu</span>
+                              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+                                <circle cx="12" cy="12" r="1" />
+                                <circle cx="12" cy="5" r="1" />
+                                <circle cx="12" cy="19" r="1" />
+                              </svg>
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="bg-gray-900 border-gray-800 text-gray-300">
+                            <DropdownMenuItem onClick={() => startEditing(todo)} className="hover:bg-gray-800">
+                              <FaEdit className="mr-2 h-4 w-4" /> Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => toggleComplete(todo.id, todo.is_complete)}
+                              className="text-blue-400 hover:bg-gray-800"
+                            >
+                              <FaCheck className="mr-2 h-4 w-4" />
+                              {todo.is_complete ? "Mark as Todo" : "Mark as Done"}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => deleteTodo(todo.id)}
+                              className="text-red-400 hover:bg-gray-800"
+                            >
+                              <FaTrash className="mr-2 h-4 w-4" /> Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))
                 )}
-              </li>
-            ))
-          )}
-        </ul>
-      )}
+              </TableBody>
+            </Table>
+            <div className="flex items-center justify-between px-4 py-2 border-t border-gray-800 text-gray-400">
+              <p className="text-sm">
+                {filteredTodos.length} of {todos.length} row(s) selected.
+              </p>
+              <div className="flex items-center space-x-2">
+                <p className="text-sm whitespace-nowrap">Rows per page</p>
+                <select 
+                  className="h-8 rounded-md border border-gray-800 bg-black px-2 text-sm text-white"
+                  aria-label="Select number of rows per page"
+                >
+                  <option>10</option>
+                  <option>20</option>
+                  <option>50</option>
+                  <option>100</option>
+                </select>
+                <div className="flex items-center space-x-2">
+                  <Button variant="outline" size="icon" className="h-8 w-8 p-0 bg-black border-gray-800 text-gray-400 hover:bg-gray-900 hover:text-white">
+                    <span className="sr-only">Go to first page</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+                      <polyline points="11 17 6 12 11 7" />
+                      <polyline points="18 17 13 12 18 7" />
+                    </svg>
+                  </Button>
+                  <Button variant="outline" size="icon" className="h-8 w-8 p-0 bg-black border-gray-800 text-gray-400 hover:bg-gray-900 hover:text-white">
+                    <span className="sr-only">Go to previous page</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+                      <polyline points="15 18 9 12 15 6" />
+                    </svg>
+                  </Button>
+                  <span className="text-sm">Page 1 of 1</span>
+                  <Button variant="outline" size="icon" className="h-8 w-8 p-0 bg-black border-gray-800 text-gray-400 hover:bg-gray-900 hover:text-white">
+                    <span className="sr-only">Go to next page</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+                      <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                  </Button>
+                  <Button variant="outline" size="icon" className="h-8 w-8 p-0 bg-black border-gray-800 text-gray-400 hover:bg-gray-900 hover:text-white">
+                    <span className="sr-only">Go to last page</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+                      <polyline points="13 17 18 12 13 7" />
+                      <polyline points="6 17 11 12 6 7" />
+                    </svg>
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
