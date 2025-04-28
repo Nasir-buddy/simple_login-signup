@@ -2,8 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Landing from './Component/Landing'
 import { AuthProvider } from './context/AuthContext'
 import ProtectedRoute from './Component/ProtectedRoute'
-import Todo from './Component/todo'
-
+import Todo from './Component/Todo'
 const App = () => {
   return (
     <AuthProvider>
