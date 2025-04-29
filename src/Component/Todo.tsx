@@ -22,6 +22,7 @@ import { Badge } from "../components/ui/badge"
 import { Checkbox } from "../components/ui/checkbox"
 import { cn } from '../lib/utils'
 import { useAuth } from '../context/AuthContext'
+import { useNavigate } from 'react-router-dom'
 
 interface Todo {
   id: string
@@ -45,6 +46,7 @@ const Todo = () => {
   const [userId, setUserId] = useState<string | null>(null)
   const [filterText, setFilterText] = useState('')
   const { signOut } = useAuth()
+  const navigate = useNavigate()
 
   // Get current user and fetch todos on component mount
   useEffect(() => {
@@ -234,6 +236,12 @@ const Todo = () => {
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-3xl font-bold">Welcome back!</h1>
           <div className="flex items-center gap-4">
+            <Button
+              onClick={() => navigate('/upload')}
+              className="flex items-center gap-2"
+            >
+              Upload Files
+            </Button>
             <button
               onClick={handleLogout}
               className="flex items-center gap-2 bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-md transition-colors"
