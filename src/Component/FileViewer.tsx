@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { Button } from '../components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card";
+import { useEffect, useState } from 'react';
 
 const FileViewer = () => {
   const { id } = useParams<{ id: string }>();
