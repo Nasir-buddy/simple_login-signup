@@ -152,27 +152,27 @@ const MyFiles = () => {
                         </div>
                       </div>
                     </div>
-                    {(file.name.endsWith('.pdf') || file.name.endsWith('.docx')) && (
-                      <Button
-                        variant="outline"
-                        className="ml-2"
-                        onClick={() => navigate(`/viewfile/${file.id}`)}
-                      >
-                        View
-                      </Button>
-                    )}
-                    <div className="flex space-x-2">
+                    <div className="flex items-center space-x-2 ml-auto">
+                      {(file.name.endsWith('.pdf') || file.name.endsWith('.docx')) && (
+                        <Button
+                          variant="outline"
+                          className="border-gray-700 text-blue-700 hover:bg-blue-600 hover:text-white"
+                          onClick={() => navigate(`/viewfile/${file.id}`)}
+                        >
+                          View
+                        </Button>
+                      )}
                       <Button
                         variant="outline"
                         onClick={() => handleDownload(file)}
-                        className="border-gray-700 text-black hover:scale-105"
+                        className="border-gray-700 text-black hover:bg-gray-700 hover:text-white"
                       >
                         Download
                       </Button>
                       <Button
                         variant="destructive"
                         onClick={() => handleDelete(file)}
-                        className="bg-red-500 text-white hover:scale-105"
+                        className="bg-red-500 text-white hover:bg-red-600"
                       >
                         Delete
                       </Button>
