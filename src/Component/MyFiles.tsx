@@ -152,6 +152,15 @@ const MyFiles = () => {
                         </div>
                       </div>
                     </div>
+                    {(file.name.endsWith('.pdf') || file.name.endsWith('.docx')) && (
+                      <Button
+                        variant="outline"
+                        className="ml-2"
+                        onClick={() => navigate(`/viewfile/${file.id}`)}
+                      >
+                        View
+                      </Button>
+                    )}
                     <div className="flex space-x-2">
                       <Button
                         variant="outline"
