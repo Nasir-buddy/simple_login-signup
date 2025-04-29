@@ -119,7 +119,7 @@ const MyFiles = () => {
         <Button
           variant="ghost"
           onClick={() => navigate('/todo')}
-          className="mb-4 text-gray-400 hover:text-white"
+          className="mb-4 text-gray-400 hover:bg-gray-800 hover:text-white"
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Todo
@@ -156,13 +156,14 @@ const MyFiles = () => {
                       <Button
                         variant="outline"
                         onClick={() => handleDownload(file)}
-                        className="border-gray-700"
+                        className="border-gray-700 text-black hover:scale-105"
                       >
                         Download
                       </Button>
                       <Button
                         variant="destructive"
                         onClick={() => handleDelete(file)}
+                        className="bg-red-500 text-white hover:scale-105"
                       >
                         Delete
                       </Button>
