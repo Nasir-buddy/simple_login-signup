@@ -5,6 +5,7 @@ import ProtectedRoute from './Component/ProtectedRoute'
 import Todo from './Component/Todo'
 import Uploadfile from './Component/Uploadfile'
 import MyFiles from './Component/MyFiles'
+import FileViewer from './Component/FileViewer'
 
 const App = () => {
   return (
@@ -37,6 +38,7 @@ const App = () => {
               </ProtectedRoute>
             }
           />
+          <Route path="/viewfile/:id" element={<ProtectedRoute><FileViewer /></ProtectedRoute>} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
