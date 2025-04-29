@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
 import { Button } from "../components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card"
 import { ArrowLeft } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 interface UploadedFile {
   id: string
@@ -21,6 +21,7 @@ const MyFiles = () => {
   const { user } = useAuth()
   const navigate = useNavigate()
 
+  
   useEffect(() => {
     if (user) {
       fetchFiles()
